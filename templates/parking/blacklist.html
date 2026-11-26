@@ -1,0 +1,9 @@
+{% extends "parking/base.html" %}
+{% block title %}Чорний список · ParkVision{% endblock %}
+{% block content %}
+<div class="page-heading section-heading"><div><p class="eyebrow">АДМІНІСТРУВАННЯ</p><h1>Чорний список</h1><p>Транспортні засоби з обмеженням доступу.</p></div><a class="button primary" href="{% url 'add_blacklist' %}">＋ Додати запис</a></div>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Номер</th><th>Власник</th><th>Причина</th><th>Додав</th><th>Дата</th><th></th></tr></thead><tbody>
+{% for entry in entries %}<tr><td><span class="plate-tag">{{ entry.plate.plate_number }}</span></td><td>{{ entry.plate.owner.username }}</td><td>{{ entry.reason|default:"—" }}</td><td>{{ entry.created_by.username }}</td><td>{{ entry.created_at|date:"d.m.Y H:i" }}</td><td><form method="post" action="{% url 'remove_blacklist' entry.id %}">{% csrf_token %}<button class="link-button danger-text" type="submit">Видалити</button></form></td></tr>
+{% empty %}<tr><td colspan="5" class="empty-state">Чорний список порожній.</td></tr>{% endfor %}
+</tbody></table></div><p class="field-help"><a href="{% url 'admin:index' %}">Відкрити повну адмінпанель →</a></p></section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "parking/base.html" %}
+{% block title %}Розпізнати авто · ParkVision{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">РОЗПІЗНАВАННЯ ТА ОБЛІК</p><h1>Зареєструвати в'їзд або виїзд</h1><p>Завантажте фото і явно виберіть тип події, щоб повторне фото не закрило паркування випадково.</p></div></div>
+<div class="content-grid model-grid">
+  <section class="panel">
+    <h2>Фото автомобіля</h2>
+    <form method="post" enctype="multipart/form-data" class="form-stack">{% csrf_token %}
+      {{ form.as_p }}
+      <p class="field-help">Формати: JPG, PNG або WebP. Максимум 10 МБ. Результат OCR можна виправити за потреби.</p>
+      <button class="button primary" type="submit">Розпізнати й зареєструвати подію</button>
+    </form>
+  </section>
+  <section class="panel">
+    <p class="eyebrow">ЯК ЦЕ ПРАЦЮЄ</p>
+    <ol class="steps"><li>Детектор шукає номерний знак на зображенні.</li><li>OCR прогнозує текст номера.</li><li>Система шукає його в реєстрі та перевіряє чорний список.</li><li>Для зареєстрованого авто фіксується в'їзд або виїзд і рахується вартість.</li></ol>
+    <div class="notice warning">LPR навчено на синтетичному ELPD. Перевіряйте передбачений номер; за потреби внесіть ручне виправлення.</div>
+  </section>
+</div>
+{% if result %}
+<section class="panel result-panel">
+  <div class="section-heading"><div><p class="eyebrow">РОЗПІЗНАВАННЯ</p><h2>{{ result.event_message }}</h2></div></div>
+  {% if result.prediction.annotated_image %}<img class="result-image" src="data:image/jpeg;base64,{{ result.prediction.annotated_image }}" alt="Зображення з рамкою номерного знака">{% endif %}
+  <p>{{ result.prediction.message }}</p>
+  {% if result.event %}<span class="result-time">Впевненість LPR: {{ result.prediction.confidence_percent }}% · подію збережено в журналі.</span>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

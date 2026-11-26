@@ -1,0 +1,14 @@
+{% extends "parking/base.html" %}
+{% block title %}Вхід · ParkVision{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <p class="eyebrow">PARKVISION</p>
+  <h1>З поверненням</h1>
+  <p class="muted">Увійдіть, щоб переглянути автомобілі та паркування.</p>
+  <form method="post" class="form-stack">{% csrf_token %}
+    {{ form.as_p }}
+    <button class="button primary wide" type="submit">Увійти</button>
+  </form>
+  <p class="muted center">Ще немає облікового запису? <a href="{% url 'register' %}">Зареєструватися</a></p>
+</section>
+{% endblock %}

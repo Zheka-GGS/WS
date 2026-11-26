@@ -1,0 +1,46 @@
+{% extends "parking/base.html" %}
+{% block title %}Огляд · ParkVision{% endblock %}
+{% block content %}
+<section class="hero">
+  <div><p class="eyebrow">ПАНЕЛЬ КЕРУВАННЯ</p><h1>Вітаємо, {{ user.first_name|default:user.username }}</h1><p>Стан паркування та останні події розпізнавання.</p></div>
+  <a class="button light" href="{% url 'process_image' %}">＋ Розпізнати авто</a>
+</section>
+<section class="stats">
+  <article class="stat-card"><span>Зареєстровані номери</span><strong>{{ plate_count }}</strong><small>Поточний тариф: {{ tariff.hourly_rate }} грн/год</small></article>
+  <article class="stat-card"><span>На парковці зараз</span><strong>{{ active_count }}</strong><small>Активних сесій</small></article>
+  <article class="stat-card"><span>Завершені сесії</span><strong>{{ closed_session_count }}</strong><small><a href="{% url 'history' %}">Переглянути історію →</a></small></article>
+  <article class="stat-card"><span>Нараховано за завершені сесії</span><strong>{{ total_billed }} ₴</strong><small>За всіма доступними вам авто</small></article>
+  <article class="stat-card"><span>Ліміт сповіщення</span><strong>{{ tariff.alert_limit }} ₴</strong><small><a href="{% url 'model_lab' %}">Перевірити моделі AI →</a></small></article>
+</section>
+<div class="content-grid">
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">У РЕЖИМІ РЕАЛЬНОГО ЧАСУ</p><h2>Автомобілі на парковці</h2></div><a href="{% url 'history' %}">Вся історія</a></div>
+    {% if active_sessions %}
+    <div class="table-wrap"><table><thead><tr><th>Номер</th><th>Власник</th><th>В'їзд</th><th>Тривалість</th><th>Нараховано</th></tr></thead><tbody>
+      {% for session in active_sessions %}<tr><td><span class="plate-tag">{{ session.plate.plate_number }}</span></td><td>{{ session.plate.owner.username }}</td><td>{{ session.entry_at|date:"d.m.Y H:i" }}</td><td>{{ session.duration_display }}</td><td>{{ session.total_cost }} ₴</td></tr>{% endfor %}
+    </tbody></table></div>
+    {% else %}<div class="empty-state">Активних паркувань немає.</div>{% endif %}
+  </section>
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">ОСТАННІ СПОВІЩЕННЯ</p><h2>Сповіщення</h2></div></div>
+    {% if notifications %}
+      {% for notification in notifications %}<div class="notification"><span class="status-dot"></span><div><strong>{{ notification.message }}</strong><small>{{ notification.created_at|date:"d.m.Y H:i" }}</small></div></div>{% endfor %}
+      <form method="post" action="{% url 'notifications_read' %}">{% csrf_token %}<button class="button subtle" type="submit">Позначити прочитаними</button></form>
+    {% else %}<div class="empty-state">Нових сповіщень немає.</div>{% endif %}
+  </section>
+</div>
+<section class="panel">
+  <div class="section-heading"><div><p class="eyebrow">ВАШ РЕЄСТР</p><h2>Номерні знаки</h2></div><a href="{% url 'plates' %}">Усі номери →</a></div>
+  {% if plates %}
+  <div class="plate-list">{% for plate in plates %}<span class="plate-tag">{{ plate.plate_number }}{% if user.is_staff %} · {{ plate.owner.username }}{% endif %}</span>{% endfor %}</div>
+  {% else %}<div class="empty-state">Зареєстрованих автомобілів немає.</div>{% endif %}
+</section>
+<section class="panel">
+  <div class="section-heading"><div><p class="eyebrow">ЖУРНАЛ</p><h2>Останні події</h2></div><a href="{% url 'export_csv' %}">Експортувати CSV ↓</a></div>
+  {% if recent_events %}
+  <div class="table-wrap"><table><thead><tr><th>Час</th><th>Номер</th><th>Подія</th><th>Оператор</th><th>Деталі</th></tr></thead><tbody>
+    {% for event in recent_events %}<tr><td>{{ event.created_at|date:"d.m.Y H:i" }}</td><td><span class="plate-tag">{{ event.plate_text }}</span></td><td>{{ event.get_event_type_display }}</td><td>{{ event.actor.username|default:"—" }}</td><td>{{ event.details|default:"—" }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<div class="empty-state">Подій поки немає. Завантажте фото авто, щоб почати.</div>{% endif %}
+</section>
+{% endblock %}

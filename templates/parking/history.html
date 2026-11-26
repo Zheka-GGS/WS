@@ -1,0 +1,9 @@
+{% extends "parking/base.html" %}
+{% block title %}Історія паркувань · ParkVision{% endblock %}
+{% block content %}
+<div class="page-heading section-heading"><div><p class="eyebrow">ЗВІТИ</p><h1>Історія паркувань</h1><p>Тривалість і нарахована вартість кожної сесії.</p></div><a class="button primary" href="{% url 'export_csv' %}">Експортувати CSV</a></div>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Номер</th><th>Власник</th><th>В'їзд</th><th>Виїзд</th><th>Тривалість</th><th>Тариф</th><th>Вартість</th></tr></thead><tbody>
+{% for session in sessions %}<tr><td><span class="plate-tag">{{ session.plate.plate_number }}</span></td><td>{{ session.plate.owner.username }}</td><td>{{ session.entry_at|date:"d.m.Y H:i" }}</td><td>{{ session.exit_at|date:"d.m.Y H:i"|default:"На парковці" }}</td><td>{{ session.duration_display }}</td><td>{{ session.hourly_rate }} ₴/год</td><td><strong>{{ session.total_cost }} ₴</strong></td></tr>
+{% empty %}<tr><td colspan="7" class="empty-state">Історія паркувань порожня.</td></tr>{% endfor %}
+</tbody></table></div><p class="field-help">Для великих звітів використайте CSV-експорт.</p></section>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ParkVision{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'parking/app.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">P</span> ParkVision</a>
+    {% if user.is_authenticated %}
+    <nav class="nav-links">
+      <a href="{% url 'dashboard' %}">Огляд</a>
+      <a href="{% url 'model_lab' %}">Перевірка AI</a>
+      <a href="{% url 'process_image' %}">Розпізнати авто</a>
+      <a href="{% url 'plates' %}">Номерні знаки</a>
+      <a href="{% url 'history' %}">Історія</a>
+      {% if user.is_staff %}
+      <a href="{% url 'tariff' %}">Тарифи</a>
+      <a href="{% url 'blacklist' %}">Чорний список</a>
+      <a href="{% url 'admin:index' %}">Адмінпанель</a>
+      {% endif %}
+    </nav>
+    <div class="account">
+      <span>{{ user.username }}{% if user.is_staff %}<span class="role-badge">Адмін</span>{% endif %}</span>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="link-button" type="submit">Вийти</button></form>
+    </div>
+    {% endif %}
+  </header>
+  <main class="page">
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">ParkVision · локальна система керування паркуванням</footer>
+</body>
+</html>

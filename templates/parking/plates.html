@@ -1,0 +1,11 @@
+{% extends "parking/base.html" %}
+{% block title %}Номерні знаки · ParkVision{% endblock %}
+{% block content %}
+<div class="page-heading section-heading"><div><p class="eyebrow">РЕЄСТР ТРАНСПОРТУ</p><h1>Номерні знаки</h1><p>Особисті автомобілі та їхні власники.</p></div>
+{% if user.is_staff %}<a class="button primary" href="{% url 'add_plate' %}">＋ Додати номер</a>{% endif %}</div>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Номер</th><th>Власник</th><th>Зареєстровано</th><th>Загальна тривалість</th><th>Вартість</th><th>Статус</th>{% if user.is_staff %}<th>Дії</th>{% endif %}</tr></thead><tbody>
+{% for plate in plates %}<tr><td><span class="plate-tag">{{ plate.plate_number }}</span></td><td>{{ plate.owner.username }}</td><td>{{ plate.created_at|date:"d.m.Y" }}</td><td>{{ plate.total_parking_duration }}</td><td>{{ plate.total_parking_cost }} ₴</td><td>{% if plate.is_active %}{% if plate.blacklist_entry %}<span class="badge danger">Чорний список</span>{% else %}<span class="badge success">Активний</span>{% endif %}{% else %}<span class="badge">Архівний</span>{% endif %}</td>
+{% if user.is_staff %}<td>{% if plate.is_active %}<form method="post" action="{% url 'delete_plate' plate.id %}">{% csrf_token %}<button class="link-button danger-text" type="submit">Архівувати</button></form>{% endif %}</td>{% endif %}</tr>
+{% empty %}<tr><td colspan="5" class="empty-state">Зареєстрованих номерів не знайдено.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

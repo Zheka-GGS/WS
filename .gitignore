@@ -1,0 +1,11 @@
+.env
+.venv/
+.ultralytics/
+__pycache__/
+*.py[cod]
+*.sqlite3
+staticfiles/
+data/raw/
+*.zip
+*.tar.gz
+data/models/lpr_training/

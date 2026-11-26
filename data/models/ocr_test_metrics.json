@@ -1,0 +1,13 @@
+{
+  "dataset": "generated Ukrainian-format plates (synthetic only)",
+  "train_plates": 12000,
+  "validation_plates": 1500,
+  "test_plates": 2000,
+  "epochs_requested": 25,
+  "character_accuracy": 1.0,
+  "plate_exact_match": 1.0,
+  "character_error_rate": 0.0,
+  "target_exact_match": 0.85,
+  "target_met_on_synthetic_test": true,
+  "real_camera_accuracy_verified": false
+}

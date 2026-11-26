@@ -1,0 +1,8 @@
+{% extends "parking/base.html" %}
+{% block title %}{{ title }} · ParkVision{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <p class="eyebrow">РЕЄСТР ТРАНСПОРТУ</p><h1>{{ title }}</h1>
+  <form method="post" class="form-stack">{% csrf_token %}{{ form.as_p }}<button class="button primary" type="submit">Зберегти</button></form>
+</section>
+{% endblock %}

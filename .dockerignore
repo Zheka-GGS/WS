@@ -1,0 +1,14 @@
+.git
+.venv
+__pycache__
+*.py[cod]
+*.zip
+*.tar.gz
+*.ipynb
+data/raw
+data/models/*_training
+data/models/synthetic_character_lists
+data/models/synthetic_characters.yaml
+data/models/*.log
+db.sqlite3
+staticfiles

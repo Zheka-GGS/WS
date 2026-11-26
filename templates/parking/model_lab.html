@@ -1,0 +1,28 @@
+{% extends "parking/base.html" %}
+{% block title %}Перевірка AI · ParkVision{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">AI MODEL LAB</p><h1>Перевірка моделей</h1><p>Оберіть модель, завантажте приклад і перегляньте результат inference.</p></div></div>
+<div class="content-grid model-grid">
+  <section class="panel">
+    <h2>Новий тест</h2>
+    <form method="post" enctype="multipart/form-data" class="form-stack">{% csrf_token %}
+      {{ form.as_p }}
+      <p class="field-help">Формати: JPG, PNG або WebP. Максимальний розмір: 10 МБ.</p>
+      <button class="button primary" type="submit">Запустити модель</button>
+    </form>
+  </section>
+  <section class="panel">
+    <p class="eyebrow">ДОСТУПНІ МОДЕЛІ</p>
+    <div class="model-card"><span class="model-number">01</span><div><h3>LPR · детектор номерного знака</h3><p>Знаходить область номера на фото авто. Навчений лише на двох сценах — експериментальна модель.</p></div></div>
+    <div class="model-card"><span class="model-number">02</span><div><h3>OCR · український номер LLDDDDLL</h3><p>Навчений на синтетичних українських номерах. ELPD навчає лише детектор; інші європейські формати не підтримуються. Score моделі не є точністю розпізнавання.</p></div></div>
+    <div class="model-card"><span class="model-number">03</span><div><h3>PKLot · зайнятість</h3><p>Визначає, чи вільне одне паркомісце на зображенні.</p></div></div>
+  </section>
+</div>
+{% if result %}
+<section class="panel result-panel">
+  <div class="section-heading"><div><p class="eyebrow">РЕЗУЛЬТАТ</p><h2>Висновок моделі</h2></div><span class="result-time">{{ result.elapsed_ms }} мс · API {{ result.inference_time_ms }} мс</span></div>
+  {% if result.annotated_image %}<img class="result-image" src="data:image/jpeg;base64,{{ result.annotated_image }}" alt="Результат роботи моделі">{% endif %}
+  <div class="result-message">{{ result.message }}</div>
+</section>
+{% endif %}
+{% endblock %}
