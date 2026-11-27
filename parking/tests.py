@@ -61,6 +61,36 @@ class RecognitionAnnotationTests(TestCase):
         self.assertTrue(np.any(annotated != image))
         self.assertIn("AA1234BB", message)
         self.assertIn("94.0%", message)
+        self.assertIn("not accuracy", message)
+
+    @patch("model_inference._predict_plate")
+    @patch("model_inference.load_model")
+    def test_unsupported_format_candidate_is_not_returned_as_recognized(
+        self, load_model, predict_ocr
+    ):
+        class FakeBoxes:
+            conf = torch.tensor([0.97])
+            xyxy = torch.tensor([[30, 35, 220, 95]])
+
+            def __len__(self):
+                return len(self.conf)
+
+        boxes = FakeBoxes()
+        detector = SimpleNamespace(
+            predict=lambda **kwargs: [SimpleNamespace(boxes=boxes)]
+        )
+        load_model.side_effect = lambda model_id: detector if model_id == "lpr_detector" else object()
+        predict_ocr.return_value = ("H05I422P", 0.81, None)
+        image = np.zeros((150, 300, 3), dtype=np.uint8)
+
+        plate, confidence, annotated, message = recognize_plate(image)
+
+        self.assertEqual(plate, "")
+        self.assertAlmostEqual(confidence, 0.97, places=2)
+        self.assertEqual(annotated.shape, image.shape)
+        self.assertIn("H05I422P", message)
+        self.assertIn("LLDDDDLL", message)
+        self.assertIn("verify manually", message)
 
 
 class PlateNormalizationTests(TestCase):
